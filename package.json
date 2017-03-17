@@ -1,0 +1,35 @@
+{
+  "name": "rc-mobx-form",
+  "version": "0.0.1",
+  "description": "A react form component depends on mobx with similar api to rc-form.",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "babel src --out-dir lib --copy-files",
+    "prepublish": "npm run build"
+  },
+  "keywords": [
+    "mobx",
+    "rc-form",
+    "antd",
+    "react",
+    "form",
+    "validate"
+  ],
+  "author": "frezc <frezcw@gmail.com> (http://frezc.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Frezc/rc-mobx-form.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Frezc/rc-mobx-form/issues"
+  },
+  "homepage": "https://github.com/Frezc/rc-mobx-form",
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.13.1",
+    "babel-preset-es2015": "^6.13.1",
+    "babel-preset-react": "^6.11.1",
+    "babel-preset-stage-0": "^6.5.0",
+  }
+}
