@@ -1,36 +1,89 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { getValueFromEvent } from './utils'
 import { toJS } from 'mobx'
-import { PropTypes as MobPropTypes } from 'mobx-react'
+import AsyncValidator from 'async-validator'
 
 const DEFAULT_VALIDATE_TRIGGER = 'onChange';
 const DEFAULT_TRIGGER = DEFAULT_VALIDATE_TRIGGER;
 
 function createForm(options = {}) {
-  const { store, prefix = '' } = options
+  const { store, prefix = '', defaultItemProps = {} } = options
 
   function decorate(WrappedComponent) {
 
     class WrapForm extends Component {
 
-      static propTypes = {
-        store: MobPropTypes.observableObject.isRequired
+      static childContextTypes = {
+        form: PropTypes.object,
+        defaultItemProps: PropTypes.object
       }
 
       state = {
-        error: {},
+        errors: {},
       }
 
-      getTargetStore(store) {
+      fieldOptions = {}
+      subCb = new Set()
+
+      getChildContext() {
+        return { form: this, defaultItemProps }
+      }
+
+      getTargetFields(store = this.props.store || store) {
         return prefix ? store[prefix] : store
       }
 
-      validateField() {
+      subscribe(cb) {
+        this.subCb.add(cb)
+      }
 
+      unsubscribe(cb) {
+        this.subCb.delete(cb)
+      }
+
+      getResetErrors() {
+        return Object.keys(this.state.errors).reduce((o, name) => {
+          o[name] = []
+          return o
+        }, {})
+      }
+
+      validateField(name, value, rules) {
+        if (!rules) return;
+        const validator = new AsyncValidator({ [name]: rules })
+        validator.validate({ [name]: value }, (err, fields) => {
+          this.setState(({ errors }) => ({
+            errors: { ...errors, [name]: err || [] }
+          }))
+        })
+      }
+
+      validateFields = (callback) => {
+        const validator = new AsyncValidator(
+          Object.keys(this.fieldOptions).reduce((o, name) => {
+            const rules = this.fieldOptions[name].rules
+            if (rules) o[name] = rules
+            return o
+          }, {})
+        )
+        return new Promise((res, rej) => {
+          validator.validate(this.getTargetFields(), (err, fields) => {
+            this.setState(({ errors }) => ({ errors: Object.assign({}, errors, fields) }), () => {
+              for (const cb of this.subCb) {
+                cb()
+              }
+            })
+            if (fields) {
+              callback ? callback(fields) : rej(fields)
+            } else {
+              res()
+            }
+          })
+        })
       }
 
       getFieldProps = (name, customFieldOption = {}) => {
-        const store = customFieldOption.store || this.props.store || store
+        const store = this.props.store || store
         if (!store) throw new Error('Must pass `store` with Mobx instance.')
         if (!name) {
           throw new Error('Must call `getFieldProps` with valid name string!');
@@ -50,14 +103,16 @@ function createForm(options = {}) {
           trigger,
           validateTrigger,     // not support now
           validate,
-          valuePropName
+          valuePropName,
+          parseValue
         } = fieldOption;
 
-        const value = this.getTargetStore(store)[name]
+        const value = this.getTargetFields(store)[name]
+        this.fieldOptions[name] = fieldOption
         return {
-          [valuePropName]: typeof value === 'number' ? String(value) : toJS(value),
+          [valuePropName]: parseValue ? parseValue(value) : toJS(value),
           [trigger]: this.createHandler(store, fieldOption),
-          __MOBX_FORM__: true,
+          ['data-field-name']: name
         }
       }
 
@@ -65,10 +120,8 @@ function createForm(options = {}) {
         return (...params) => {
           const value = getValueFromEvent(...params)
           onChange && onChange(value)
-          console.log('changed', value)
-          this.validateField(value, rules)
-          this.getTargetStore(store)[name] = value
-          console.log('store', toJS(this.getTargetStore(store)))
+          this.validateField(name, value, rules)
+          this.getTargetFields(store)[name] = value
         }
       }
 
