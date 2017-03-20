@@ -126,6 +126,7 @@ function createForm(options = {}) {
       }
 
       render() {
+        this.fieldOptions = {}
         return (
           <WrappedComponent
             {...this.props}
