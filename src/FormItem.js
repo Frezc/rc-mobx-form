@@ -25,7 +25,7 @@ class MobxFormItem extends React.PureComponent {
     let fieldOption;
     const children = React.Children.toArray(this.props.children)
     for (const child of children) {
-      const childFieldOption = this.context.form.fieldOptions[child.props['data-field-name']]
+      const childFieldOption = this.context.form.fieldOptions[child.props && child.props['data-field-name']]
       if (childFieldOption && typeof childFieldOption === 'object') {
         fieldOption = childFieldOption
         break
