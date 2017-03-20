@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { Form } from 'antd'
+import Form from 'antd/lib/form'
 import { checkIsRequired } from './utils'
 
 const FormItem = Form.Item
