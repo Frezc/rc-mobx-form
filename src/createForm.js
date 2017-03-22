@@ -7,7 +7,7 @@ const DEFAULT_VALIDATE_TRIGGER = 'onChange';
 const DEFAULT_TRIGGER = DEFAULT_VALIDATE_TRIGGER;
 
 function createForm(options = {}) {
-  const { store, prefix = '', defaultItemProps = {} } = options
+  const { store: gStore, prefix = '', defaultItemProps = {} } = options
 
   function decorate(WrappedComponent) {
 
@@ -29,7 +29,7 @@ function createForm(options = {}) {
         return { form: this, defaultItemProps }
       }
 
-      getTargetFields(store = this.props.store || store) {
+      getTargetFields(store = this.props.store || gStore) {
         return prefix ? store[prefix] : store
       }
 
@@ -83,7 +83,7 @@ function createForm(options = {}) {
       }
 
       getFieldProps = (name, customFieldOption = {}) => {
-        const store = this.props.store || store
+        const store = this.props.store || gStore
         if (!store) throw new Error('Must pass `store` with Mobx instance.')
         if (!name) {
           throw new Error('Must call `getFieldProps` with valid name string!');
