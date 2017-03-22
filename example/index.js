@@ -36,7 +36,6 @@ class Demo extends React.Component {
           <span className="ant-form-text">China</span>
         </FormItem>
         <FormItem
-          label="Select"
           hasFeedback
         >
           <Select
