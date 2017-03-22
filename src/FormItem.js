@@ -33,7 +33,7 @@ class MobxFormItem extends React.PureComponent {
     }
     
     const appendProps = {}
-    if (fieldOption) {
+    if (fieldOption && !this.props.disabledValidate) {
       const name = fieldOption.name
       const err = this.context.form.state.errors[name]
       if (err) {

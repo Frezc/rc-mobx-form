@@ -67,7 +67,7 @@ function createForm(options = {}) {
           }, {})
         )
         return new Promise((res, rej) => {
-          validator.validate(this.getTargetFields(), (err, fields) => {
+          validator.validate(toJS(this.getTargetFields()), (err, fields) => {
             this.setState(({ errors }) => ({ errors: Object.assign({}, errors, fields) }), () => {
               for (const cb of this.subCb) {
                 cb()
