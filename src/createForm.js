@@ -126,11 +126,11 @@ function createForm(options = {}) {
       }
 
       render() {
-        this.fieldOptions = {}
         return (
           <WrappedComponent
             {...this.props}
             form={this}
+            ref={this.props.rootRef}
           />
         )
       }
