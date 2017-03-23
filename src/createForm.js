@@ -6,6 +6,8 @@ import AsyncValidator from 'async-validator'
 const DEFAULT_VALIDATE_TRIGGER = 'onChange';
 const DEFAULT_TRIGGER = DEFAULT_VALIDATE_TRIGGER;
 
+let __counter = 1
+
 function createForm(options = {}) {
   const { store: gStore, prefix = '', defaultItemProps = {} } = options
 
@@ -128,11 +130,14 @@ function createForm(options = {}) {
       render() {
         // 每次重新render时要清除已经不存在的项
         this.fieldOptions = {}
+        // use __counter to force update
+        // because mobx will prevent update of Component when prop not changed.
         return (
           <WrappedComponent
             {...this.props}
             form={this}
             ref={this.props.rootRef}
+            __counter={__counter++}
           />
         )
       }

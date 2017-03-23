@@ -1,6 +1,6 @@
 {
   "name": "rc-mobx-form",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "A react form component depends on mobx with similar api to rc-form.",
   "main": "lib/index.js",
   "scripts": {
