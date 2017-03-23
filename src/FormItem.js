@@ -4,21 +4,11 @@ import { checkIsRequired } from './utils'
 
 const FormItem = Form.Item
 
-class MobxFormItem extends React.PureComponent {
+class MobxFormItem extends React.Component {
 
   static contextTypes = {
     form: PropTypes.object,
     defaultItemProps: PropTypes.object
-  }
-
-  update = () => { this.forceUpdate() }
-
-  componentDidMount() {
-    this.context.form.subscribe(this.update)
-  }
-
-  componentWillUnmount() {
-    this.context.form.unsubscribe(this.update)
   }
 
   render() {

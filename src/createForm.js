@@ -126,6 +126,8 @@ function createForm(options = {}) {
       }
 
       render() {
+        // 每次重新render时要清除已经不存在的项
+        this.fieldOptions = {}
         return (
           <WrappedComponent
             {...this.props}
