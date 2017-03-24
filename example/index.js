@@ -12,6 +12,7 @@ import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import DemoForm from './DemoForm'
 
+@observer
 class Demo extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
