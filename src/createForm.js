@@ -91,6 +91,8 @@ function createForm(options = {}) {
           throw new Error('Must call `getFieldProps` with valid name string!');
         }
 
+        const options = (store.__options && store.__options[name]) || {}
+
         const fieldOption = {
           valuePropName: 'value',
           validate: [],
@@ -98,6 +100,7 @@ function createForm(options = {}) {
           validateTrigger: DEFAULT_VALIDATE_TRIGGER,
           getValueFromEvent,
           name,
+          ...options,
           ...customFieldOption,
         };
 

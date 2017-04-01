@@ -12,6 +12,13 @@ class DemoForm {
   @observable radioGroup;
   @observable radioButton;
   @observable upload;
+
+  // you can set options at here
+  __options = {
+  	selectMultiple: {
+      rules: { required: true, message: 'Please select your colors!' }
+  	}
+  }
 }
 
 export default DemoForm

@@ -58,9 +58,7 @@ class Demo extends React.Component {
           <Select
             multiple
             placeholder="Please select favourite colors"
-            {...getFieldProps('selectMultiple', {
-              rules: { required: true, message: 'Please select your colors!' },
-            })}
+            {...getFieldProps('selectMultiple')}
           >
             <Option value="red">Red</Option>
             <Option value="green">Green</Option>
