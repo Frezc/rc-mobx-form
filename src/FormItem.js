@@ -43,8 +43,8 @@ class MobxFormItem extends React.Component {
     return (
       <FormItem
         {...this.context.defaultItemProps}
-        {...this.props}
         {...appendProps}
+        {...this.props}
       />
     )
   }

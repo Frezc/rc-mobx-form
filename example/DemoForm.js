@@ -13,12 +13,15 @@ class DemoForm {
   @observable radioButton;
   @observable upload;
 
-  // you can set options at here
-  __options = {
-  	selectMultiple: {
-      rules: { required: true, message: 'Please select your colors!' }
-  	}
-  }
+  // use getter can prevent to be converted by toJS
+  get __options() {
+    // you can set options at here
+    return {
+      selectMultiple: {
+        rules: { required: true, message: 'Please select your colors!' }
+      }
+    }
+  } 
 }
 
 export default DemoForm
