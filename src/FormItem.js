@@ -8,7 +8,8 @@ class MobxFormItem extends React.Component {
 
   static contextTypes = {
     form: PropTypes.object,
-    defaultItemProps: PropTypes.object
+    defaultItemProps: PropTypes.object,
+    displayDefaultLabel: PropTypes.bool,
   }
 
   render() {
@@ -26,7 +27,9 @@ class MobxFormItem extends React.Component {
     if (fieldOption && !this.props.disabledValidate) {
       const name = fieldOption.name
 
-      appendProps.label = this.props.label || name
+      if (this.context.displayDefaultLabel && this.props.label === undefined) {
+        appendProps.label = name
+      }
 
       const err = this.context.form.state.errors[name]
       if (err) {

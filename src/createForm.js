@@ -9,7 +9,12 @@ const DEFAULT_TRIGGER = DEFAULT_VALIDATE_TRIGGER;
 let __counter = 1
 
 function createForm(options = {}) {
-  const { store: gStore, prefix = '', defaultItemProps = {} } = options
+  const { 
+    store: gStore, 
+    prefix = '', 
+    defaultItemProps = {},
+    displayDefaultLabel = true
+  } = options
 
   function decorate(WrappedComponent) {
 
@@ -17,7 +22,8 @@ function createForm(options = {}) {
 
       static childContextTypes = {
         form: PropTypes.object,
-        defaultItemProps: PropTypes.object
+        defaultItemProps: PropTypes.object,
+        displayDefaultLabel: PropTypes.bool,
       }
 
       state = {
@@ -28,7 +34,7 @@ function createForm(options = {}) {
       subCb = new Set()
 
       getChildContext() {
-        return { form: this, defaultItemProps }
+        return { form: this, defaultItemProps, displayDefaultLabel }
       }
 
       getTargetFields(store = this.props.store || gStore) {
