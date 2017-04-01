@@ -16,7 +16,8 @@ import DemoForm from './DemoForm'
 class Demo extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.form.validateFields(fields => console.log(fields))
+    this.props.form.validateFields(fields => console.log('error', fields))
+      .then(() => console.log('success', toJS(store)))
   }
 
   normFile = (e) => {
