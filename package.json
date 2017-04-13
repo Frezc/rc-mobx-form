@@ -1,6 +1,6 @@
 {
   "name": "rc-mobx-form",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "A react form component depends on mobx with similar api to rc-form.",
   "main": "lib/index.js",
   "scripts": {
@@ -45,6 +45,7 @@
   "dependencies": {
     "antd": "*",
     "react": "15.x",
-    "async-validator": "1.x"
+    "async-validator": "1.x",
+    "mobx": "3.x"
   }
 }
