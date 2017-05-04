@@ -100,12 +100,13 @@ function createForm(options = {}) {
         const options = (store.__options && store.__options[name]) || {}
 
         const fieldOption = {
+          getValueFromEvent,
+          name,
           valuePropName: 'value',
           validate: [],
           trigger: DEFAULT_TRIGGER,
           validateTrigger: DEFAULT_VALIDATE_TRIGGER,
-          getValueFromEvent,
-          name,
+          appendProps: {},
           ...options,
           ...customFieldOption,
         };
@@ -115,7 +116,8 @@ function createForm(options = {}) {
           validateTrigger,     // not support now
           validate,
           valuePropName,
-          parseValue
+          parseValue,
+          appendProps,
         } = fieldOption;
 
         const value = this.getTargetFields(store)[name]
@@ -123,7 +125,8 @@ function createForm(options = {}) {
         return {
           [valuePropName]: parseValue ? parseValue(value) : toJS(value),
           [trigger]: this.createHandler(store, fieldOption),
-          ['data-field-name']: name
+          ['data-field-name']: name,
+          ...appendProps,
         }
       }
 
