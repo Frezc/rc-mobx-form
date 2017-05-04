@@ -56,11 +56,7 @@ class Demo extends React.Component {
           label="Select[multiple]"
           hasFeedback
         >
-          <Select
-            multiple
-            placeholder="Please select favourite colors"
-            {...getFieldProps('selectMultiple')}
-          >
+          <Select {...getFieldProps('selectMultiple')}>
             <Option value="red">Red</Option>
             <Option value="green">Green</Option>
             <Option value="blue">Blue</Option>

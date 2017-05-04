@@ -18,7 +18,11 @@ class DemoForm {
     // you can set options at here
     return {
       selectMultiple: {
-        rules: { required: true, message: 'Please select your colors!' }
+        rules: { required: true, message: 'Please select your colors!' },
+        appendProps: {
+          multiple: true,
+          placeholder: "Please select favourite colors",
+        }
       }
     }
   } 
