@@ -10,7 +10,8 @@ ep. you can use store to manage nested form fields.
 
 ## todo
 - [ ] Support object path.
-- [ ] Support default observer object in form.
+- [x] Support default observer object in form.
+- [ ] add doc.
 
 ## example
 
