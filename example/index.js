@@ -17,7 +17,7 @@ class Demo extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFields(fields => console.log('error', fields))
-      .then(() => console.log('success', toJS(store)))
+      .then((values) => console.log('success', values))
   }
 
   normFile = (e) => {
@@ -69,7 +69,10 @@ class Demo extends React.Component {
           <InputNumber
             min={1}
             max={10}
-            {...getFieldProps('inputNumber')}
+            {...getFieldProps('inputNumber', {
+              // initialValue only work when use default
+              initialValue: 1,
+            })}
           />
           <span className="ant-form-text"> machines</span>
         </FormItem>

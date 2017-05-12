@@ -1,4 +1,5 @@
 var webpackConfig = {
+  devtool: 'source-map',
   entry: './example/index.js',
 
   output: {

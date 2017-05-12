@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { getValueFromEvent } from './utils'
-import { toJS } from 'mobx'
+import { toJS, extendObservable } from 'mobx'
 import AsyncValidator from 'async-validator'
 
 const DEFAULT_VALIDATE_TRIGGER = 'onChange';
@@ -32,12 +32,14 @@ function createForm(options = {}) {
 
       fieldOptions = {}
       subCb = new Set()
+      store = {}
 
       getChildContext() {
         return { form: this, defaultItemProps, displayDefaultLabel }
       }
 
-      getTargetFields(store = this.props.store || gStore) {
+      getTargetFields() {
+        const store = this.getStore()
         return prefix ? store[prefix] : store
       }
 
@@ -75,7 +77,8 @@ function createForm(options = {}) {
           }, {})
         )
         return new Promise((res, rej) => {
-          validator.validate(toJS(this.getTargetFields()), (err, fields) => {
+          const values = toJS(this.getTargetFields())
+          validator.validate(values, (err, fields) => {
             this.setState(({ errors }) => ({ errors: Object.assign({}, errors, fields) }), () => {
               for (const cb of this.subCb) {
                 cb()
@@ -84,14 +87,18 @@ function createForm(options = {}) {
             if (fields) {
               callback ? callback(fields) : rej(fields)
             } else {
-              res()
+              res(values)
             }
           })
         })
       }
 
+      getStore = () => {
+        return this.props.store || gStore || this.store
+      }
+
       getFieldProps = (name, customFieldOption = {}) => {
-        const store = this.props.store || gStore
+        const store = this.getStore()
         if (!store) throw new Error('Must pass `store` with Mobx instance.')
         if (!name) {
           throw new Error('Must call `getFieldProps` with valid name string!');
@@ -118,24 +125,27 @@ function createForm(options = {}) {
           valuePropName,
           parseValue,
           appendProps,
+          initialValue,
         } = fieldOption;
 
-        const value = this.getTargetFields(store)[name]
+        if (!(name in store)) extendObservable(store, { [name]: initialValue })
+
+        const value = this.getTargetFields()[name]
         this.fieldOptions[name] = fieldOption
         return {
           [valuePropName]: parseValue ? parseValue(value) : toJS(value),
-          [trigger]: this.createHandler(store, fieldOption),
+          [trigger]: this.createHandler(fieldOption),
           ['data-field-name']: name,
           ...appendProps,
         }
       }
 
-      createHandler(store, { name, onChange, rules, getValueFromEvent }) {
+      createHandler({ name, onChange, rules, getValueFromEvent }) {
         return (...params) => {
           const value = getValueFromEvent(...params)
           onChange && onChange(value)
           this.validateField(name, value, rules)
-          this.getTargetFields(store)[name] = value
+          this.getTargetFields()[name] = value
         }
       }
 
