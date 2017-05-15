@@ -46,6 +46,7 @@
     "antd": "*",
     "react": "15.x",
     "async-validator": "1.x",
-    "mobx": "3.x"
+    "mobx": "3.x",
+    "mobx-react": "4.x"
   }
 }
