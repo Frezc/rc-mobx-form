@@ -1,9 +1,11 @@
 import React, { PropTypes } from 'react'
 import Form from 'antd/lib/form'
 import { checkIsRequired } from './utils'
+import { observer } from 'mobx-react'
 
 const FormItem = Form.Item
 
+@observer
 class MobxFormItem extends React.Component {
 
   static contextTypes = {
