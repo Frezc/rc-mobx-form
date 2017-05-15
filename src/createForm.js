@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { getValueFromEvent } from './utils'
-import { toJS, extendObservable } from 'mobx'
+import { toJS, extendObservable, action, observable } from 'mobx'
 import AsyncValidator from 'async-validator'
 
 const DEFAULT_VALIDATE_TRIGGER = 'onChange';
@@ -26,10 +26,7 @@ function createForm(options = {}) {
         displayDefaultLabel: PropTypes.bool,
       }
 
-      state = {
-        errors: {},
-      }
-
+      errors = observable.map()
       fieldOptions = {}
       subCb = new Set()
       store = {}
@@ -52,7 +49,7 @@ function createForm(options = {}) {
       }
 
       getResetErrors() {
-        return Object.keys(this.state.errors).reduce((o, name) => {
+        return this.errors.keys().reduce((o, name) => {
           o[name] = []
           return o
         }, {})
@@ -61,11 +58,9 @@ function createForm(options = {}) {
       validateField(name, value, rules) {
         if (!rules) return;
         const validator = new AsyncValidator({ [name]: rules })
-        validator.validate({ [name]: value }, (err, fields) => {
-          this.setState(({ errors }) => ({
-            errors: { ...errors, [name]: err || [] }
-          }))
-        })
+        validator.validate({ [name]: value }, action('validateField', (err, fields) => {
+          this.errors.set(name, err || [])
+        }))
       }
 
       validateFields = (callback) => {
@@ -78,18 +73,17 @@ function createForm(options = {}) {
         )
         return new Promise((res, rej) => {
           const values = toJS(this.getTargetFields())
-          validator.validate(values, (err, fields) => {
-            this.setState(({ errors }) => ({ errors: Object.assign({}, errors, fields) }), () => {
-              for (const cb of this.subCb) {
-                cb()
-              }
-            })
+          validator.validate(values, action((err, fields) => {
+            this.errors.merge(fields)            
+            for (const cb of this.subCb) {
+              cb()
+            }
             if (fields) {
               callback ? callback(fields) : rej(fields)
             } else {
               res(values)
             }
-          })
+          }))
         })
       }
 

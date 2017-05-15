@@ -31,7 +31,7 @@ class MobxFormItem extends React.Component {
         appendProps.label = name
       }
 
-      const err = this.context.form.state.errors[name]
+      const err = this.context.form.errors.get(name)
       if (err) {
         appendProps.validateStatus = err.length > 0 ? 'error' : 'success'
       }
