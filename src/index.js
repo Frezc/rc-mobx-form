@@ -1,4 +1,4 @@
 import createForm from './createForm'
-import FormItem from './FormItem'
+import FormItem, { setInternalFormItem } from './FormItem'
 
-export { createForm, FormItem }
+export { createForm, FormItem, setInternalFormItem }

@@ -2,16 +2,17 @@ import React, { Component, PropTypes } from 'react'
 import { getValueFromEvent } from './utils'
 import { toJS, extendObservable, action, observable } from 'mobx'
 import AsyncValidator from 'async-validator'
+import set from 'lodash.set'
+import get from 'lodash.get'
+import has from 'lodash.has'
 
 const DEFAULT_VALIDATE_TRIGGER = 'onChange';
 const DEFAULT_TRIGGER = DEFAULT_VALIDATE_TRIGGER;
 
-let __counter = 1
-
 function createForm(options = {}) {
   const { 
     store: gStore, 
-    prefix = '', 
+    prefix = '',    // support lodash.get
     defaultItemProps = {},
     displayDefaultLabel = true
   } = options
@@ -28,56 +29,28 @@ function createForm(options = {}) {
 
       errors = observable.map()
       fieldOptions = {}
-      subCb = new Set()
       store = {}
 
-      getChildContext() {
-        return { form: this, defaultItemProps, displayDefaultLabel }
-      }
-
-      getTargetFields() {
-        const store = this.getStore()
-        return prefix ? store[prefix] : store
-      }
-
-      subscribe(cb) {
-        this.subCb.add(cb)
-      }
-
-      unsubscribe(cb) {
-        this.subCb.delete(cb)
-      }
-
-      getResetErrors() {
-        return this.errors.keys().reduce((o, name) => {
-          o[name] = []
+      validateFields = (callback) => {
+        const needValidateName = []
+        const rules = Object.keys(this.fieldOptions).reduce((o, name) => {
+          const rules = this.fieldOptions[name].rules
+          if (rules) {
+            needValidateName.push(name)
+            o[name] = rules
+          }
           return o
         }, {})
-      }
-
-      validateField(name, value, rules) {
-        if (!rules) return;
-        const validator = new AsyncValidator({ [name]: rules })
-        validator.validate({ [name]: value }, action('validateField', (err, fields) => {
-          this.errors.set(name, err || [])
-        }))
-      }
-
-      validateFields = (callback) => {
-        const validator = new AsyncValidator(
-          Object.keys(this.fieldOptions).reduce((o, name) => {
-            const rules = this.fieldOptions[name].rules
-            if (rules) o[name] = rules
-            return o
-          }, {})
-        )
+        const validator = new AsyncValidator(rules)
         return new Promise((res, rej) => {
           const values = toJS(this.getTargetFields())
-          validator.validate(values, action((err, fields) => {
-            this.errors.merge(fields)            
-            for (const cb of this.subCb) {
-              cb()
-            }
+          // flatten values that need validate
+          const flattenValue = needValidateName.reduce((o, cur) => {
+            o[cur] = this.getField(cur)
+            return o
+          }, {})
+          validator.validate(flattenValue, action((err, fields) => {
+            this.errors.merge(fields)
             if (fields) {
               callback ? callback(fields) : rej(fields)
             } else {
@@ -85,6 +58,17 @@ function createForm(options = {}) {
             }
           }))
         })
+      }
+
+      getFieldError = (name) => {
+        return this.errors.get(name)
+      }
+
+      /**
+       * not support filter name now
+       */
+      getFieldsError = () => {
+        return this.errors.toJS()
       }
 
       getStore = () => {
@@ -104,7 +88,6 @@ function createForm(options = {}) {
           getValueFromEvent,
           name,
           valuePropName: 'value',
-          validate: [],
           trigger: DEFAULT_TRIGGER,
           validateTrigger: DEFAULT_VALIDATE_TRIGGER,
           appendProps: {},
@@ -114,32 +97,77 @@ function createForm(options = {}) {
 
         const {
           trigger,
-          validateTrigger,     // not support now
-          validate,
+          validateTrigger,
           valuePropName,
           parseValue,
           appendProps,
           initialValue,
         } = fieldOption;
 
-        if (!(name in store)) extendObservable(store, { [name]: initialValue })
+        if (!has(store, name))
+          extendObservable(store, set({}, prefix ? `${prefix}.${name}` : name, initialValue))
 
-        const value = this.getTargetFields()[name]
+        const value = this.getField(name)
         this.fieldOptions[name] = fieldOption
-        return {
+
+        const props = {
           [valuePropName]: parseValue ? parseValue(value) : toJS(value),
-          [trigger]: this.createHandler(fieldOption),
+          [trigger]: this.createHandler(fieldOption, validateTrigger === trigger),
           ['data-field-name']: name,
           ...appendProps,
         }
+
+        if (validateTrigger !== trigger) props[validateTrigger] = this.createValidateHandler(fieldOption)
+        return props
       }
 
-      createHandler({ name, onChange, rules, getValueFromEvent }) {
+      getChildContext() {
+        return { form: this, defaultItemProps, displayDefaultLabel }
+      }
+
+      getTargetFields() {
+        const store = this.getStore()
+        return prefix ? get(store, prefix) : store
+      }
+
+      getField(path, defaultValue) {
+        const store = this.getStore()
+        return get(store, prefix ? `${prefix}.${path}` : path, defaultValue)
+      }
+
+      setField(path, value) {
+        const store = this.getStore()
+        return set(store, prefix ? `${prefix}.${path}` : path, value)
+      }
+
+      getResetErrors() {
+        return this.errors.keys().reduce((o, name) => {
+          o[name] = []
+          return o
+        }, {})
+      }
+
+      validateField(name, value, rules) {
+        if (!rules) return;
+        const validator = new AsyncValidator({ [name]: rules })
+        validator.validate({ [name]: value }, action('validateField', (err, fields) => {
+          this.errors.set(name, err || [])
+        }))
+      }
+
+      createHandler({ name, onChange, rules, getValueFromEvent }, needValidate = false) {
         return (...params) => {
           const value = getValueFromEvent(...params)
           onChange && onChange(value)
+          needValidate && this.validateField(name, value, rules)
+          this.setField(name, value)
+        }
+      }
+
+      createValidateHandler({ name, rules, getValueFromEvent }) {
+        return (...params) => {
+          const value = getValueFromEvent(...params)
           this.validateField(name, value, rules)
-          this.getTargetFields()[name] = value
         }
       }
 
@@ -153,7 +181,6 @@ function createForm(options = {}) {
             {...this.props}
             form={this}
             ref={this.props.rootRef}
-            __counter={__counter++}
           />
         )
       }

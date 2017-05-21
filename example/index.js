@@ -2,15 +2,18 @@ import React from 'react'
 import { render } from 'react-dom'
 import {
   Form, Select, InputNumber, Switch, Radio,
-  Slider, Button, Upload, Icon,
+  Slider, Button, Upload, Icon, Input
 } from 'antd';
 const Option = Select.Option;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
-import { createForm, FormItem } from '../src'
+import { createForm, FormItem, setInternalFormItem } from '../src'
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import DemoForm from './DemoForm'
+
+const AntdFormItem = Form.Item
+setInternalFormItem(AntdFormItem)
 
 @observer
 class Demo extends React.Component {
@@ -35,6 +38,15 @@ class Demo extends React.Component {
           label="Nation"
         >
           <span className="ant-form-text">China</span>
+        </FormItem>
+        <FormItem hasFeedback>
+          <Input
+            {...getFieldProps('nest.input', {
+              rules: { required: true, message: 'Please input something!' },
+              validateTrigger: 'onBlur',
+            })}
+            placeholder="Input here"
+          />
         </FormItem>
         <FormItem
           hasFeedback

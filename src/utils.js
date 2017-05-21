@@ -9,7 +9,7 @@ export function getValueFromEvent(e) {
 
 export function checkIsRequired(rules) {
   if (rules) {
-    if (Array.isArray(rules)) return !!rules[0].required
+    if (Array.isArray(rules)) return rules.filter(({ required }) => required).length > 0
     return !!rules.required
   }
   return false

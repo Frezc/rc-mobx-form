@@ -4,6 +4,8 @@
 import { observable } from 'mobx'
 
 class DemoForm {
+  // auto injection
+  // @observable nest = { input: '' }
   @observable select;
   @observable selectMultiple;
   @observable inputNumber = 3;
@@ -20,9 +22,9 @@ class DemoForm {
       selectMultiple: {
         rules: { required: true, message: 'Please select your colors!' },
         appendProps: {
-          multiple: true,
+          mode: 'multiple',
           placeholder: "Please select favourite colors",
-        }
+        },
       }
     }
   } 
