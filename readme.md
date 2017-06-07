@@ -132,7 +132,7 @@ render(<WrappedForm store={new DemoForm()} />, targetEl)
 - getFieldProps(name, fieldOptions: Object)
 
 #### fieldOptions
-see ant-design's [doc](https://ant.design/components/form/#getFieldDecorator(id,-options)-parameters)
+see ant-design's [doc](http://1x.ant.design/components/form/#this.props.form.getFieldProps(id,-options))
 but something different:
 
 - exclusive not supported
