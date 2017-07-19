@@ -30,7 +30,7 @@ class MobxFormItem extends React.Component {
   }
 
   render() {
-    if (!FormItem) throw new Error('You must set the FormItem by `useFormItem` function in entry file.')
+    if (!FormItem) throw new Error('You must set the FormItem by `setInternalFormItem` function in entry file.')
 
     let fieldOption;
     const children = React.Children.toArray(this.props.children)
