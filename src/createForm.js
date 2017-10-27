@@ -104,8 +104,10 @@ function createForm(options = {}) {
           initialValue,
         } = fieldOption;
 
-        if (!has(store, name))
-          extendObservable(store, set({}, prefix ? `${prefix}.${name}` : name, initialValue))
+        const path = prefix ? `${prefix}.${name}` : name;
+
+        if (!has(store, path))
+          extendObservable(store, set({}, path, initialValue))
 
         const value = this.getField(name)
         this.fieldOptions[name] = fieldOption

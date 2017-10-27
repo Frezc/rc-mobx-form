@@ -8,7 +8,7 @@ const Option = Select.Option;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 import { createForm, FormItem, setInternalFormItem } from '../src'
-import { toJS } from 'mobx'
+import { toJS, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import DemoForm from './DemoForm'
 
@@ -17,6 +17,9 @@ setInternalFormItem(AntdFormItem)
 
 @observer
 class Demo extends React.Component {
+
+  @observable page = 1;
+
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFields(fields => console.log('error', fields))
@@ -34,20 +37,23 @@ class Demo extends React.Component {
     const { getFieldProps } = this.props.form;
     return (
       <Form onSubmit={this.handleSubmit}>
+        <Button onClick={() => this.page = 2}>TEST</Button>
         <FormItem
           label="Nation"
         >
           <span className="ant-form-text">China</span>
         </FormItem>
-        <FormItem hasFeedback>
-          <Input
-            {...getFieldProps('nest.input', {
-              rules: { required: true, message: 'Please input something!' },
-              validateTrigger: 'onBlur',
-            })}
-            placeholder="Input here"
-          />
-        </FormItem>
+        {this.page === 2 &&
+          <FormItem hasFeedback>
+            <Input
+              {...getFieldProps('nest.input', {
+                rules: { required: true, message: 'Please input something!' },
+                validateTrigger: 'onBlur',
+              })}
+              placeholder="Input here"
+            />
+          </FormItem>
+        }
         <FormItem
           hasFeedback
         >
@@ -166,4 +172,4 @@ const WrappedDemo = createForm({ defaultItemProps: formItemLayout })(Demo);
 
 const store = new DemoForm()
 
-render(<WrappedDemo store={store}/>, document.getElementById('main'))
+render(<WrappedDemo store={store} />, document.getElementById('main'))
