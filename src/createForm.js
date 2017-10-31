@@ -2,9 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { getValueFromEvent } from './utils'
 import { toJS, extendObservable, action, observable } from 'mobx'
 import AsyncValidator from 'async-validator'
-import set from 'lodash.set'
-import get from 'lodash.get'
-import has from 'lodash.has'
+import { set, get, has } from 'lodash';
 
 const DEFAULT_VALIDATE_TRIGGER = 'onChange';
 const DEFAULT_TRIGGER = DEFAULT_VALIDATE_TRIGGER;

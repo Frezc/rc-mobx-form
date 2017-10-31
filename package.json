@@ -1,6 +1,6 @@
 {
   "name": "rc-mobx-form",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A react form component depends on mobx with similar api to rc-form.",
   "main": "lib/index.js",
   "scripts": {
@@ -48,9 +48,7 @@
   },
   "dependencies": {
     "async-validator": "1.x",
-    "lodash.get": "4.x",
-    "lodash.has": "4.x",
-    "lodash.set": "4.x",
+    "lodash": "^4.17.4",
     "mobx": "3.x",
     "mobx-react": "4.x",
     "react": "15.x"
