@@ -1,8 +1,11 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { getValueFromEvent } from './utils'
 import { toJS, extendObservable, action, observable } from 'mobx'
 import AsyncValidator from 'async-validator'
-import { set, get, has } from 'lodash';
+import set from 'lodash/set';
+import get from 'lodash/get';
+import has from 'lodash/has';
 
 const DEFAULT_VALIDATE_TRIGGER = 'onChange';
 const DEFAULT_TRIGGER = DEFAULT_VALIDATE_TRIGGER;
@@ -71,6 +74,12 @@ function createForm(options = {}) {
 
       getStore = () => {
         return this.props.store || gStore || this.store
+      }
+
+      getFieldDecorator = (name, customFieldOption = {}) => {
+        return (element) => {
+          return React.cloneElement(element, this.getFieldProps(name, customFieldOption));
+        }
       }
 
       getFieldProps = (name, customFieldOption = {}) => {

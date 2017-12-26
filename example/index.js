@@ -34,7 +34,7 @@ class Demo extends React.Component {
   }
 
   render() {
-    const { getFieldProps } = this.props.form;
+    const { getFieldProps, getFieldDecorator } = this.props.form;
     return (
       <Form onSubmit={this.handleSubmit}>
         <Button onClick={() => this.page = 2}>TEST</Button>
@@ -57,17 +57,18 @@ class Demo extends React.Component {
         <FormItem
           hasFeedback
         >
-          <Select
-            placeholder="Please select a country"
-            {...getFieldProps('select', {
-              rules: [
-                { required: true, message: 'Please select your country!' },
-              ],
-            })}
-          >
-            <Option value="china">China</Option>
-            <Option value="use">U.S.A</Option>
-          </Select>
+          {getFieldDecorator('select', {
+            rules: [
+              { required: true, message: 'Please select your country!' },
+            ],
+          })(
+            <Select
+              placeholder="Please select a country"
+            >
+              <Option value="china">China</Option>
+              <Option value="use">U.S.A</Option>
+            </Select>
+          )}
         </FormItem>
 
         <FormItem
