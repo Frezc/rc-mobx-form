@@ -1,10 +1,11 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { getValueFromEvent } from './utils'
 import { toJS, extendObservable, action, observable } from 'mobx'
 import AsyncValidator from 'async-validator'
-import set from 'lodash.set'
-import get from 'lodash.get'
-import has from 'lodash.has'
+import set from 'lodash/set';
+import get from 'lodash/get';
+import has from 'lodash/has';
 
 const DEFAULT_VALIDATE_TRIGGER = 'onChange';
 const DEFAULT_TRIGGER = DEFAULT_VALIDATE_TRIGGER;
@@ -75,6 +76,12 @@ function createForm(options = {}) {
         return this.props.store || gStore || this.store
       }
 
+      getFieldDecorator = (name, customFieldOption = {}) => {
+        return (element) => {
+          return React.cloneElement(element, this.getFieldProps(name, customFieldOption));
+        }
+      }
+
       getFieldProps = (name, customFieldOption = {}) => {
         const store = this.getStore()
         if (!store) throw new Error('Must pass `store` with Mobx instance.')
@@ -104,8 +111,10 @@ function createForm(options = {}) {
           initialValue,
         } = fieldOption;
 
-        if (!has(store, name))
-          extendObservable(store, set({}, prefix ? `${prefix}.${name}` : name, initialValue))
+        const path = prefix ? `${prefix}.${name}` : name;
+
+        if (!has(store, path))
+          extendObservable(store, set({}, path, initialValue))
 
         const value = this.getField(name)
         this.fieldOptions[name] = fieldOption

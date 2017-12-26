@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react';
+import PropTypes from 'prop-types';
 import { checkIsRequired } from './utils'
 import { observer } from 'mobx-react'
 
@@ -30,7 +31,7 @@ class MobxFormItem extends React.Component {
   }
 
   render() {
-    if (!FormItem) throw new Error('You must set the FormItem by `useFormItem` function in entry file.')
+    if (!FormItem) throw new Error('You must set the FormItem by `setInternalFormItem` function in entry file.')
 
     let fieldOption;
     const children = React.Children.toArray(this.props.children)
